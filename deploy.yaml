@@ -1,0 +1,42 @@
+#
+# To deploy:
+#
+# kubectl apply -f deploy.yaml
+#
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arithmetic-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: arithmetic-service
+  template:
+    metadata:
+      labels:
+        app: arithmetic-service
+    spec:
+      containers: 
+      - name: arithmetic-service
+        image: practicum15adamshm.azurecr.io/arithmetic-service:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PORT
+          value: "4000"
+      imagePullSecrets:
+        - name: acr-auth
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: arithmetic-service
+spec:
+  selector:
+    app: arithmetic-service
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4000
